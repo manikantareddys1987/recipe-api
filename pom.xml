@@ -19,31 +19,11 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
-		<lombok.version>1.18.32</lombok.version>
-		<gatling.version>3.10.5</gatling.version>
+		<lombok.version>1.18.42</lombok.version>
+		<gatling.version>3.9.5</gatling.version>
+		<gatling-plugin.version>4.3.7</gatling-plugin.version>
 	</properties>
 
-	<repositories>
-		<repository>
-			<id>gatling-repo</id>
-			<name>Gatling Repository</name>
-			<url>https://repository.gatling.io/snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>gatling-plugin-repo</id>
-			<name>Gatling Plugin Repository</name>
-			<url>https://repository.gatling.io/snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
 	<dependencies>
 		<!-- Spring Boot Starters -->
 		<dependency>
@@ -166,8 +146,19 @@
 
 		<!-- Gatling for Performance Testing -->
 		<dependency>
-			<groupId>io.gatling.highcharts</groupId>
-			<artifactId>gatling-charts-highcharts</artifactId>
+			<groupId>io.gatling</groupId>
+			<artifactId>gatling-app</artifactId>
+			<version>${gatling.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.gatling</groupId>
+			<artifactId>gatling-recorder</artifactId>
+			<version>${gatling.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.gatling</groupId>
+			<artifactId>gatling-charts</artifactId>
 			<version>${gatling.version}</version>
 			<scope>test</scope>
 		</dependency>
@@ -201,6 +192,19 @@
 					<target>21</target>
 					<release>21</release>
 					<fork>true</fork>
+					<compilerArgs>
+						<arg>-parameters</arg>
+						<arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
+						<arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
+						<arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>
+						<arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</arg>
+						<arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED</arg>
+						<arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</arg>
+						<arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>
+						<arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
+						<arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
+						<arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED</arg>
+					</compilerArgs>
 					<annotationProcessorPaths>
 						<!-- Lombok must come first to generate getters/setters -->
 						<path>
@@ -310,26 +314,24 @@
 				</configuration>
 			</plugin>
 
-			<!-- Gatling Plugin for Performance Testing - Disabled due to repository availability -->
-			<!-- To run Gatling tests: mvn gatling:test -Dgatling.simulationClass=com.recipe.gatling.YourSimulation -->
-			<!-- <plugin>
+			<!-- Gatling Plugin for Performance Testing -->
+			<!-- Run with: mvn gatling:test -Dgatling.simulationClass=com.recipe.gatling.RecipeApiSimulation -->
+			<plugin>
 				<groupId>io.gatling</groupId>
 				<artifactId>gatling-maven-plugin</artifactId>
-				<version>${gatling.version}</version>
+				<version>${gatling-plugin.version}</version>
 				<configuration>
 					<simulationsFolder>src/test/java/com/recipe/gatling</simulationsFolder>
 					<includes>
 						<include>**/*Simulation.java</include>
+						<include>**/*Test.java</include>
 					</includes>
+					<!-- Skip HTML report generation (requires commercial highcharts) -->
+					<runMultipleSimulations>false</runMultipleSimulations>
+					<skip>false</skip>
+					<failOnError>false</failOnError>
 				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>test</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin> -->
+			</plugin>
 		</plugins>
 	</build>
 
