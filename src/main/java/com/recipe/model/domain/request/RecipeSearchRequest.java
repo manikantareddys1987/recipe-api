@@ -3,18 +3,23 @@ package com.recipe.model.domain.request;
 import com.recipe.model.domain.request.input.DataOptionReqInput;
 import com.recipe.validator.EnumValidator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
+@Setter
+@Getter
 public class RecipeSearchRequest {
     @JsonProperty("criteria")
-    @ApiModelProperty(notes = "Search criteria you want to search recipe with")
+    @Schema(description = "Search criteria you want to search recipe with")
     @Valid
     private List<SearchCriteriaRequest> searchCriteriaRequests;
 
-    @ApiModelProperty(notes = "If you want all or just one criteria is enough for filter to work", example = "all")
+    @Schema(description = "If you want all or just one criteria is enough for filter to work", example = "all")
     @EnumValidator(enumClass = DataOptionReqInput.class, message = "{data.option.invalid}")
     private String dataOption;
 
@@ -26,19 +31,4 @@ public class RecipeSearchRequest {
         this.dataOption = dataOption;
     }
 
-    public List<SearchCriteriaRequest> getSearchCriteriaRequests() {
-        return searchCriteriaRequests;
-    }
-
-    public String getDataOption() {
-        return dataOption;
-    }
-
-    public void setDataOption(String dataOption) {
-        this.dataOption = dataOption;
-    }
-
-    public void setSearchCriteriaRequests(List<SearchCriteriaRequest> searchCriteriaRequests) {
-        this.searchCriteriaRequests = searchCriteriaRequests;
-    }
 }

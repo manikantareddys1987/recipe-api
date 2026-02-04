@@ -12,7 +12,7 @@ public class RecipeTestDataBuilder {
         recipe.setId(id);
         recipe.setName("pasta");
         recipe.setNumberOfServings(5);
-        recipe.setType("OTHER");
+        recipe.setType("VEGETARIAN");
         recipe.setInstructions("someInstruction");
 
         return recipe;

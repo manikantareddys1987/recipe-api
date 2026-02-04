@@ -3,10 +3,12 @@ package com.recipe.unit.services;
 import com.recipe.model.domain.request.CreateIngredientRequest;
 import com.recipe.config.MessageProvider;
 import com.recipe.exception.NotFoundException;
+import com.recipe.mapper.IngredientMapper;
 import com.recipe.model.entity.Ingredient;
 import com.recipe.repository.IngredientRepository;
 import com.recipe.service.IngredientService;
 import com.recipe.unit.model.builder.IngredientTestDataBuilder;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -28,8 +30,22 @@ public class IngredientServiceTest {
     @Mock
     private MessageProvider messageProvider;
 
+    @Mock
+    private IngredientMapper ingredientMapper;
+
     @InjectMocks
     private IngredientService ingredientService;
+
+    @Before
+    public void setUp() {
+        when(ingredientMapper.createRequestToIngredient(any(CreateIngredientRequest.class)))
+                .thenAnswer(invocation -> {
+                    CreateIngredientRequest request = invocation.getArgument(0);
+                    Ingredient ingredient = new Ingredient();
+                    ingredient.setIngredient(request.getName());
+                    return ingredient;
+                });
+    }
 
     @Test
     public void test_createIngredient_successfully() {

@@ -1,17 +1,21 @@
 package com.recipe.model.domain.request;
 
 import com.recipe.config.ValidationConfig;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class CreateIngredientRequest {
     @NotBlank(message = "{ingredient.not.blank}")
     @Size(max = ValidationConfig.MAX_LENGTH_NAME, message = "{ingredient.size}")
     @Pattern(regexp = ValidationConfig.PATTERN_NAME, message = "{ingredient.pattern}")
-    @ApiModelProperty(notes = "The name of the ingredient", example = "Potato")
+    @Schema(description = "The name of the ingredient", example = "Potato")
     private String name;
 
     public CreateIngredientRequest() {
@@ -21,11 +25,4 @@ public class CreateIngredientRequest {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

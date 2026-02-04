@@ -5,10 +5,10 @@ import com.recipe.model.entity.Recipe;
 import com.recipe.model.search.SearchOperation;
 import com.recipe.config.DatabaseAttributes;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 
 public class SearchFilterContains implements SearchFilter {
 

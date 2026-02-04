@@ -8,6 +8,7 @@ import com.recipe.unit.model.builder.IngredientTestDataBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -20,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WithMockUser
 public class IngredientIT extends AbstractIT {
     @Autowired
     private IngredientRepository ingredientRepository;
@@ -37,7 +39,7 @@ public class IngredientIT extends AbstractIT {
     public void test_createIngredient_successfully() throws Exception {
         CreateIngredientRequest request = IngredientTestDataBuilder.createIngredientRequest();
 
-        MvcResult result = performPost("/ingredient", request)
+        MvcResult result = performPost("/api/v1/ingredient", request)
                 .andExpect(status().isCreated())
                 .andReturn();
 
@@ -54,7 +56,7 @@ public class IngredientIT extends AbstractIT {
         Ingredient ingredient = IngredientTestDataBuilder.createIngredient();
         Ingredient savedIngredient = ingredientRepository.save(ingredient);
 
-        performGet("/ingredient/" + savedIngredient.getId())
+        performGet("/api/v1/ingredient/" + savedIngredient.getId())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(savedIngredient.getId()))
                 .andExpect(jsonPath("$.name").value(ingredient.getIngredient()))
@@ -64,7 +66,7 @@ public class IngredientIT extends AbstractIT {
 
     @Test
     public void test_listIngredient_notFound() throws Exception {
-        performGet("/ingredient/1")
+        performGet("/api/v1/ingredient/1")
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").exists());
     }
@@ -76,7 +78,7 @@ public class IngredientIT extends AbstractIT {
         List<Ingredient> ingredientList = IngredientTestDataBuilder.createIngredientList();
         ingredientRepository.saveAll(ingredientList);
 
-        MvcResult result = performGet("/ingredient/page/0/size/10")
+        MvcResult result = performGet("/api/v1/ingredient/page/0/size/10")
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -90,7 +92,7 @@ public class IngredientIT extends AbstractIT {
         Ingredient ingredient = IngredientTestDataBuilder.createIngredient();
         Ingredient savedIngredient = ingredientRepository.save(ingredient);
 
-        performDelete("/ingredient?id=" + savedIngredient.getId())
+        performDelete("/api/v1/ingredient?id=" + savedIngredient.getId())
                 .andExpect(status().isOk());
 
         Optional<Ingredient> deletedIngredient = ingredientRepository.findById(savedIngredient.getId());
@@ -102,7 +104,7 @@ public class IngredientIT extends AbstractIT {
         Ingredient ingredient = IngredientTestDataBuilder.createIngredient();
         Ingredient savedIngredient = ingredientRepository.save(ingredient);
 
-        MvcResult result = performGet("/ingredient/" + savedIngredient.getId())
+        MvcResult result = performGet("/api/v1/ingredient/" + savedIngredient.getId())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(savedIngredient.getId()))
                 .andExpect(jsonPath("$.name").value(savedIngredient.getIngredient()))
@@ -115,7 +117,7 @@ public class IngredientIT extends AbstractIT {
     @Test
     public void test_findIngredientById_fails() throws Exception {
 
-        performGet("/ingredient/" + 1)
+        performGet("/api/v1/ingredient/" + 1)
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").exists());
     }
@@ -123,7 +125,7 @@ public class IngredientIT extends AbstractIT {
     @Test
     public void test_deleteIngredient_notFound() throws Exception {
 
-        performDelete("/ingredient?id=11")
+        performDelete("/api/v1/ingredient?id=11")
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").exists());
     }

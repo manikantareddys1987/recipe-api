@@ -1,23 +1,28 @@
 package com.recipe.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+@Getter
 @Entity
 @DynamicUpdate
 @Table(name = "ingredients")
 public class Ingredient {
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Setter
     @NotBlank
     @Column(nullable = false, unique = true)
     private String ingredient;
@@ -26,47 +31,14 @@ public class Ingredient {
     @JsonIgnoreProperties("recipeIngredients")
     private Set<Recipe> recipeIngredients;
 
+    @Setter
     @Column(updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    @Setter
     @Column
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public String getIngredient() {
-        return ingredient;
-    }
-
-    public void setIngredient(String ingredient) {
-        this.ingredient = ingredient;
-    }
-
-    public Set<Recipe> getRecipeIngredients() {
-        return recipeIngredients;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 }

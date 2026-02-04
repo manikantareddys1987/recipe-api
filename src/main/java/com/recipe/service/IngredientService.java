@@ -3,6 +3,7 @@ package com.recipe.service;
 import com.recipe.model.domain.request.CreateIngredientRequest;
 import com.recipe.config.MessageProvider;
 import com.recipe.exception.NotFoundException;
+import com.recipe.mapper.IngredientMapper;
 import com.recipe.model.entity.Ingredient;
 import com.recipe.repository.IngredientRepository;
 import org.springframework.data.domain.PageRequest;
@@ -12,34 +13,34 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class IngredientService {
     private final IngredientRepository ingredientRepository;
-
     private final MessageProvider messageProvider;
+    private final IngredientMapper ingredientMapper;
 
-    public IngredientService(IngredientRepository ingredientRepository, MessageProvider messageProvider) {
+    public IngredientService(IngredientRepository ingredientRepository,
+                             MessageProvider messageProvider,
+                             IngredientMapper ingredientMapper) {
         this.ingredientRepository = ingredientRepository;
         this.messageProvider = messageProvider;
+        this.ingredientMapper = ingredientMapper;
     }
 
     public Integer create(CreateIngredientRequest request) {
-        Ingredient ingredient = new Ingredient();
-
-        ingredient.setIngredient(request.getName());
-
+        // Automatically map DTO to entity
+        Ingredient ingredient = ingredientMapper.createRequestToIngredient(request);
         Ingredient createdIngredient = ingredientRepository.save(ingredient);
         return createdIngredient.getId();
     }
 
 
     public Set<Ingredient> getIngredientsByIds(List<Integer> ingredientIds) {
-        return ingredientIds.stream()
+        return Set.copyOf(ingredientIds.stream()
                 .map(this::findById)
-                .collect(Collectors.toSet());
+                .toList());
     }
 
     public Ingredient findById(int id) {

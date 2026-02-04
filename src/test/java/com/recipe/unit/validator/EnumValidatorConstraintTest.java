@@ -1,12 +1,11 @@
 package com.recipe.unit.validator;
 
 import com.recipe.model.domain.request.CreateIngredientRequest;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,13 +13,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 public class EnumValidatorConstraintTest {
-    private static Validator validator;
-
-    @BeforeClass
-    public static void setupValidatorInstance() {
-        validator = Validation.buildDefaultValidatorFactory()
-                .getValidator();
-    }
+    @SuppressWarnings("resource")
+    private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @Test
     public void whenNotBlankName_thenNoConstraintViolations() {

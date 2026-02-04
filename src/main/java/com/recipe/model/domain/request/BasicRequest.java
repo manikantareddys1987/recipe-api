@@ -1,20 +1,18 @@
 package com.recipe.model.domain.request;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.Getter;
 
+@Getter
 public class BasicRequest {
 
     @NotNull(message = "{id.not.null}")
     @Positive(message = "{id.positive}")
-    @ApiModelProperty(notes = "Id of the attribute", example = "1")
+    @Schema(description = "Id of the attribute", example = "1")
     private Integer id;
-
-    public Integer getId() {
-        return id;
-    }
 
     public BasicRequest() {
     }

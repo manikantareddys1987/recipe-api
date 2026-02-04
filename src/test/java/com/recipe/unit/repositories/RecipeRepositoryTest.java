@@ -1,12 +1,13 @@
 package com.recipe.unit.repositories;
 
 import com.recipe.model.entity.Recipe;
+import com.recipe.model.entity.RecipeType;
 import com.recipe.repository.RecipeRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,23 +15,23 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @RunWith(SpringRunner.class)
-@DataJpaTest
+@SpringBootTest
+@ActiveProfiles("test")
 public class RecipeRepositoryTest {
-    @Autowired
-    private TestEntityManager entityManager;
     @Autowired
     private RecipeRepository recipeRepository;
 
     @Test
     public void test_whenTryToSaveIngredientSuccess() {
         Recipe entity = new Recipe();
-        entity.setType("Other");
+        entity.setType(RecipeType.VEGETARIAN.name());
         entity.setInstructions("some instructions");
         entity.setName("pasta");
+        entity.setNumberOfServings(4);
         Recipe savedRecipe = recipeRepository.save(entity);
         assertNotNull(savedRecipe);
 
-        assertEquals("Other", savedRecipe.getType());
+        assertEquals(RecipeType.VEGETARIAN.name(), savedRecipe.getType());
         assertNotNull(savedRecipe.getId());
     }
 

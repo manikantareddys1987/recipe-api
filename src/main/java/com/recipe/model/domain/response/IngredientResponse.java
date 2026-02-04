@@ -4,15 +4,19 @@ import com.recipe.model.entity.Ingredient;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Setter
+@Getter
 public class IngredientResponse {
-    @ApiModelProperty(notes = "The id of the returned ingredient", example = "1")
+    @Schema(description = "The id of the returned ingredient", example = "1")
     private int id;
-    @ApiModelProperty(notes = "The name of the returned recipe", example = "Tomato")
+    @Schema(description = "The name of the returned recipe", example = "Tomato")
     private String name;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
@@ -31,38 +35,6 @@ public class IngredientResponse {
         this.name = ingredient.getIngredient();
         this.createdAt = ingredient.getCreatedAt();
         this.updatedAt = ingredient.getUpdatedAt();
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @Override

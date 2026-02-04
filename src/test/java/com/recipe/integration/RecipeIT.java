@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
@@ -26,6 +27,7 @@ import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WithMockUser
 public class RecipeIT extends AbstractIT {
     @Autowired
     private RecipeRepository recipeRepository;
@@ -41,9 +43,9 @@ public class RecipeIT extends AbstractIT {
     @Test
     public void test_createRecipe_successfully() throws Exception {
         CreateRecipeRequest request = new CreateRecipeRequest("pasta",
-                "OTHER", 5, null, "someInstruction");
+                "VEGETARIAN", 5, null, "someInstruction");
 
-        MvcResult result = performPost("/recipe", request)
+        MvcResult result = performPost("/api/v1/recipe", request)
                 .andExpect(status().isCreated())
                 .andReturn();
 
@@ -58,7 +60,7 @@ public class RecipeIT extends AbstractIT {
         Recipe Recipe = RecipeTestDataBuilder.createRecipe();
         Recipe savedRecipe = recipeRepository.save(Recipe);
 
-        performGet("/recipe/" + savedRecipe.getId())
+        performGet("/api/v1/recipe/" + savedRecipe.getId())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(savedRecipe.getId()))
                 .andExpect(jsonPath("$.name").value(savedRecipe.getName()))
@@ -69,7 +71,7 @@ public class RecipeIT extends AbstractIT {
     @Test
     public void test_getRecipe_notFound() throws Exception {
 
-        performGet("/recipe/1")
+        performGet("/api/v1/recipe/1")
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").exists());
     }
@@ -80,13 +82,15 @@ public class RecipeIT extends AbstractIT {
         recipe1.setId(5);
         recipe1.setName("name1");
         recipe1.setInstructions("Ins1");
-        recipe1.setType("OTHER");
+        recipe1.setType("VEGETARIAN");
+        recipe1.setNumberOfServings(2);
 
         Recipe recipe2 = new Recipe();
         recipe2.setId(6);
         recipe2.setName("name2");
         recipe2.setInstructions("Ins2");
-        recipe2.setType("OTHER");
+        recipe2.setType("NON_VEGETARIAN");
+        recipe2.setNumberOfServings(4);
 
         List<Recipe> storedRecipeList = new ArrayList<>();
         storedRecipeList.add(recipe1);
@@ -94,7 +98,7 @@ public class RecipeIT extends AbstractIT {
 
         recipeRepository.saveAll(storedRecipeList);
 
-        MvcResult result = performGet("/recipe/page/0/size/10")
+        MvcResult result = performGet("/api/v1/recipe/page/0/size/10")
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -109,7 +113,7 @@ public class RecipeIT extends AbstractIT {
     public void test_updateRecipe_successfully() throws Exception {
         Recipe testRecipe = new Recipe();
         testRecipe.setName("lasagna");
-        testRecipe.setType("OTHER");
+        testRecipe.setType("VEGETARIAN");
         testRecipe.setInstructions("chop the onion, potato");
         testRecipe.setNumberOfServings(2);
 
@@ -118,7 +122,7 @@ public class RecipeIT extends AbstractIT {
         savedRecipe.setName("meat-lasagna");
         savedRecipe.setInstructions("add meat add pasta");
 
-        performPatch("/recipe", savedRecipe)
+        performPatch("/api/v1/recipe", savedRecipe)
                 .andExpect(status().isOk());
 
         Optional<Recipe> updatedRecipe = recipeRepository.findById(savedRecipe.getId());
@@ -135,9 +139,9 @@ public class RecipeIT extends AbstractIT {
         testRecipe.setName("sarmale");
         testRecipe.setInstructions("take grape leaf, take meat, cook them");
         testRecipe.setNumberOfServings(3);
-        testRecipe.setType("OTHER");
+        testRecipe.setType("NON_VEGETARIAN");
 
-        performPatch("/recipe", testRecipe)
+        performPatch("/api/v1/recipe", testRecipe)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isBadRequest());
     }
@@ -146,7 +150,7 @@ public class RecipeIT extends AbstractIT {
     public void test_updateRecipe_notFound() throws Exception {
         Recipe testRecipe = RecipeTestDataBuilder.createRecipe(1);
 
-        performPatch("/recipe", testRecipe)
+        performPatch("/api/v1/recipe", testRecipe)
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").exists());
     }
@@ -156,7 +160,7 @@ public class RecipeIT extends AbstractIT {
         Recipe testRecipe = RecipeTestDataBuilder.createRecipe();
         Recipe savedRecipe = recipeRepository.save(testRecipe);
 
-        performDelete("/recipe", Pair.of("id", String.valueOf(savedRecipe.getId())))
+        performDelete("/api/v1/recipe", Pair.of("id", String.valueOf(savedRecipe.getId())))
                 .andExpect(status().isOk());
 
         Optional<Recipe> deletedRecipe = recipeRepository.findById(savedRecipe.getId());
@@ -166,7 +170,7 @@ public class RecipeIT extends AbstractIT {
 
     @Test
     public void test_deleteRecipe_notFound() throws Exception {
-        performDelete("/recipe", Pair.of("id", "1"))
+        performDelete("/api/v1/recipe", Pair.of("id", "1"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").exists());
     }
@@ -179,9 +183,9 @@ public class RecipeIT extends AbstractIT {
 
         //create the recipe
         CreateRecipeRequest createRecipeRequest = new CreateRecipeRequest("pasta",
-                "OTHER", 5, List.of(savedIngredient.getId()), "someInstruction");
+                "VEGETARIAN", 5, List.of(savedIngredient.getId()), "someInstruction");
 
-        MvcResult createdRecipe = performPost("/recipe", createRecipeRequest)
+        MvcResult createdRecipe = performPost("/api/v1/recipe", createRecipeRequest)
                 .andExpect(status().isCreated())
                 .andReturn();
 
@@ -200,7 +204,7 @@ public class RecipeIT extends AbstractIT {
         request.setSearchCriteriaRequests(searchCriteriaList);
 
         //call search endpoint by previously created criteria
-        MvcResult result = performPost("/recipe/search", request)
+        MvcResult result = performPost("/api/v1/recipe/search", request)
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -210,14 +214,17 @@ public class RecipeIT extends AbstractIT {
         List<RecipeResponse> listRecipeList = getListFromMvcResult(result, RecipeResponse.class);
         assertFalse(listRecipeList.isEmpty());
         Assert.assertTrue(optionalRecipe.isPresent());
-        Assert.assertEquals(listRecipeList.get(0).getName(), optionalRecipe.get().getName());
-        Assert.assertEquals(listRecipeList.get(0).getInstructions(), optionalRecipe.get().getInstructions());
-        Assert.assertEquals(listRecipeList.get(0).getNumberOfServings(), optionalRecipe.get().getNumberOfServings());
+        Assert.assertEquals(listRecipeList.getFirst().getName(), optionalRecipe.get().getName());
+        Assert.assertEquals(listRecipeList.getFirst().getInstructions(), optionalRecipe.get().getInstructions());
+        Assert.assertEquals(listRecipeList.getFirst().getNumberOfServings(), optionalRecipe.get().getNumberOfServings());
     }
 
     @Test
     public void test_SearchRecipeByCriteria_fails() throws Exception {
-        performPost("/recipe/search", null)
+        RecipeSearchRequest request = new RecipeSearchRequest();
+        // Send empty search request which should fail validation
+
+        performPost("/api/v1/recipe/search", request)
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.message").exists())
                 .andReturn();
