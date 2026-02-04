@@ -2,13 +2,7 @@
 
 ## 🚀 Quick Start
 
-**New to Docker?** See [`DOCKER_QUICK_START.txt`](docs/DOCKER_QUICK_START.txt) for step-by-step instructions.
-
-**Need Docker commands?** See [`DOCKER_COMMANDS.txt`](docs/DOCKER_COMMANDS.txt) for complete reference.
-
-**Check database?** See [`DATABASE_ACCESS_GUIDE.txt`](docs/DATABASE_ACCESS_GUIDE.txt) or run `./check-database.sh`
-
-**Easy setup:** Run `./docker-startup.sh` for interactive menu.
+**Easy setup:** Run `./docker-startup.sh` for interactive menu or follow the Docker Deployment section below.
 
 ---
 
@@ -326,7 +320,6 @@ spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://your-oauth-provide
 ### Pre-Deployment Checklist
 - [ ] Configure real OAuth2 provider
 - [ ] Enable SSL/TLS (HTTPS)
-- [ ] Replace H2 with PostgreSQL/MySQL
 - [ ] Set up Prometheus for metrics collection
 - [ ] Configure centralized logging (ELK stack)
 - [ ] Enable CORS for production domains
@@ -353,22 +346,6 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
 
 ---
 
-## Documentation
-
-Comprehensive documentation available in project root:
-
-- **ARCHITECTURE.txt** - Detailed system architecture and design patterns
-- **QUICK_START.txt** - Quick start guide with practical examples
-- **IMPROVEMENTS.txt** - Complete list of all modernizations
-- **INTERVIEW_PREP.txt** - Interview preparation guide with Q&A
-- **ACTION_ITEMS.txt** - 2-day interview preparation plan
-- **JAVA21_MODERNIZATION.txt** - Java 21 code modernization details
-- **JAVA21_PATTERNS_QUICK_REFERENCE.txt** - Modern Java patterns
-- **EXCEPTION_PATTERNS.txt** - Exception handling best practices
-- **MAPSTRUCT_INTEGRATION.txt** - DTO mapping documentation
-- **COMPLETE_PROJECT_SUMMARY.txt** - All improvements summary
-
----
 
 ## Production-Ready Implementation
 
@@ -442,11 +419,6 @@ Comprehensive documentation available in project root:
 - Gatling performance testing
 - Postman API collection
 - 75+ comprehensive tests
-
-**Documentation:**
-- 10+ detailed documentation files
-- Architecture diagrams
-- Interview preparation guide
 
 ### Architectural Decisions
 
@@ -552,6 +524,53 @@ http://localhost:8080/actuator/metrics
 #### pgAdmin (Port 5050)
 - Web-based PostgreSQL management
 - Pre-configured for easy database access
+
+### Registering PostgreSQL Server in pgAdmin
+
+After starting the Docker services, you need to register the PostgreSQL server in pgAdmin:
+
+1. **Access pgAdmin**
+   - Open browser: http://localhost:5050
+   - Login with: `admin@recipeapi.com` / `admin`
+
+2. **Register Server** (First time only)
+   - Right-click **Servers** in left panel
+   - Select **Register** → **Server**
+
+3. **General Tab**
+   - Name: `Recipe Database` (or any descriptive name)
+
+4. **Connection Tab**
+   - Host name/address: `recipe-postgres` (container name, NOT localhost)
+   - Port: `5432`
+   - Maintenance database: `recipedb`
+   - Username: `recipeuser`
+   - Password: `recipepassword`
+   - ☑️ Save password (check this box)
+
+5. **Click Save**
+
+**Important:** Use `recipe-postgres` as the hostname (the Docker container name), not `localhost`. This is because pgAdmin runs inside Docker and needs to use the internal Docker network.
+
+**Verification:**
+After connecting, you should see:
+- Database: `recipedb`
+- Schemas: `public`
+- Tables: `recipes`, `ingredients`, `recipe_ingredients`
+
+**Troubleshooting:**
+If connection fails:
+```bash
+# Verify containers are running
+docker ps | grep recipe
+
+# Check PostgreSQL is ready
+docker exec -it recipe-postgres pg_isready -U recipeuser
+
+# Test direct connection
+docker exec -it recipe-postgres psql -U recipeuser -d recipedb
+```
+
 
 ### Common Docker Commands
 
@@ -788,7 +807,7 @@ Access points:
 
 ## Contact & Support
 
-For questions or issues, refer to the comprehensive documentation files included in the project root.
+For questions or issues, please open an issue in the repository or contact the development team.
 
 ---
 
