@@ -4,7 +4,8 @@ datasources:
   - name: Prometheus
     type: prometheus
     access: proxy
-    url: http://recipe-prometheus:9090
+    uid: prometheus
+    url: http://prometheus:9090
     isDefault: true
     editable: false
     jsonData:
